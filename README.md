@@ -3,10 +3,12 @@
 A [flutter_map](https://pub.dev/packages/flutter_map) plugin for displaying directions between coordinates.
 
 ## Usage
-Add flutter_map_directions to your pubspec.yaml:
+Add `flutter_map_directions` to your `pubspec.yaml`:
 
+```
 dependencies:
   flutter_map_directions: any // or latest version
+```
 
 Add the layer widget into FlutterMap:
 

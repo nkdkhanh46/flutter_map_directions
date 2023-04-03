@@ -1,3 +1,7 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Implement flutter_map route directions
+
+## 0.0.2
+
+* Update github repository & README
