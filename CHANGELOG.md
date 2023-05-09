@@ -5,3 +5,9 @@
 ## 0.0.2
 
 * Update github repository & README
+
+## 0.0.3
+
+* Update flutter_map to v4.0.0
+
+* Add callback to DirectionsLayer

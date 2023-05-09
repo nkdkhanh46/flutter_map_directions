@@ -13,8 +13,15 @@ class DirectionsLayer extends StatefulWidget {
   final List<LatLng> coordinates;
   final Color? color;
   final double? strokeWidth;
+  final Function(bool isRouteAvailable)? onCompleted;
 
-  const DirectionsLayer({super.key, required this.coordinates, this.color, this.strokeWidth});
+  const DirectionsLayer({
+    super.key,
+    required this.coordinates,
+    this.color,
+    this.strokeWidth,
+    this.onCompleted,
+  });
 
   @override
   State<StatefulWidget> createState() => _DirectionsLayerState();
@@ -35,15 +42,34 @@ class _DirectionsLayerState extends State<DirectionsLayer> {
 
   void _getDirections() async {
     final destinations = widget.coordinates.map((location) => '${location.longitude},${location.latitude}').join(';');
-    final response = await http.get(
-        Uri.parse('https://router.project-osrm.org/route/v1/driving/$destinations?overview=full&geometries=geojson')
-    );
+    final http.Response response;
+    try {
+      response = await http.get(
+          Uri.parse('https://router.project-osrm.org/route/v1/driving/$destinations?overview=full&geometries=geojson')
+      );
+      if (response.statusCode != 200) {
+        _onCompleted(false);
+      } else {
+        _onRetrieveRouteSuccess(response);
+      }
+    } catch (_) {
+      _onCompleted(false);
+    }
+  }
+
+  void _onCompleted(bool isRouteAvailable) {
+    if (widget.onCompleted != null) {
+      widget.onCompleted!(isRouteAvailable);
+    }
+  }
+
+  void _onRetrieveRouteSuccess(http.Response response) {
     final routes = OsrmRouteResponse.fromJson(jsonDecode(response.body));
     _directions.clear();
-    for (var element in routes.routes) {
+    for (var route in routes.routes) {
       _directions.add(
         Polyline(
-          points: element.geometry.coordinates.map((e) => latlong2.LatLng(e.points.last, e.points.first)).toList(),
+          points: route.geometry.coordinates.map((e) => latlong2.LatLng(e.points.last, e.points.first)).toList(),
           strokeJoin: StrokeJoin.round,
           borderStrokeWidth: widget.strokeWidth ?? _defaultStrokeWidth,
           color: widget.color ?? _defaultColor,
@@ -51,8 +77,8 @@ class _DirectionsLayerState extends State<DirectionsLayer> {
         )
       );
     }
-    setState(() {
-    });
+    _onCompleted(_directions.isNotEmpty);
+    setState(() {});
   }
 
   @override

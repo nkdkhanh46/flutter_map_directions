@@ -32,6 +32,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  String _message = 'Finding route...';
+
   @override
   Widget build(BuildContext context) {
     final coordinates = [
@@ -47,41 +49,64 @@ class _MyHomePageState extends State<MyHomePage> {
     const padding = 50.0;
 
     return Scaffold(
-      body: FlutterMap(
-        options: MapOptions(
-          bounds: bounds,
-          boundsOptions: FitBoundsOptions(
-            padding: EdgeInsets.only(
-              left: padding,
-              top: padding + MediaQuery.of(context).padding.top,
-              right: padding,
-              bottom: padding,
-            ),
-          ),
-        ),
-        nonRotatedChildren: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          ),
-          MarkerLayer(
-            markers: coordinates.map((location) {
-              return Marker(
-                point: latlong2.LatLng(location.latitude, location.longitude),
-                width: 35,
-                height: 35,
-                builder: (context) => const Icon(
-                  Icons.location_pin,
+      body: Stack(
+        children: [
+          FlutterMap(
+            options: MapOptions(
+              bounds: bounds,
+              boundsOptions: FitBoundsOptions(
+                padding: EdgeInsets.only(
+                  left: padding,
+                  top: padding + MediaQuery.of(context).padding.top,
+                  right: padding,
+                  bottom: padding,
                 ),
-                anchorPos: AnchorPos.align(AnchorAlign.top)
-              );
-            }).toList()
+              ),
+            ),
+            nonRotatedChildren: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ),
+              MarkerLayer(
+                markers: coordinates.map((location) {
+                  return Marker(
+                    point: latlong2.LatLng(location.latitude, location.longitude),
+                    width: 35,
+                    height: 35,
+                    builder: (context) => const Icon(
+                      Icons.location_pin,
+                    ),
+                    anchorPos: AnchorPos.align(AnchorAlign.top)
+                  );
+                }).toList()
+              ),
+              DirectionsLayer(
+                coordinates: coordinates,
+                color: Colors.deepOrange,
+                onCompleted: (isRouteAvailable) => _updateMessage(isRouteAvailable),
+              ),
+            ],
           ),
-          DirectionsLayer(
-            coordinates: coordinates,
-            color: Colors.deepOrange,
-          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40)
+              ),
+              child: Text(_message),
+            ),
+          )
         ],
-      ),
+      )
     );
+  }
+
+  void _updateMessage(bool isRouteAvailable) {
+    setState(() {
+      _message = isRouteAvailable ? 'Found route' : 'No route found';
+    });
   }
 }
