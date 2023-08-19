@@ -5,12 +5,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as latlong2;
 
-import 'latlng.dart';
+import 'direction_coordinate.dart';
 import 'osrm_route_response.dart';
 
 class DirectionsLayer extends StatefulWidget {
 
-  final List<LatLng> coordinates;
+  final List<DirectionCoordinate> coordinates;
   final Color? color;
   final double? strokeWidth;
   final Function(bool isRouteAvailable)? onCompleted;

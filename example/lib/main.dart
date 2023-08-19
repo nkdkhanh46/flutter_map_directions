@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_directions/flutter_map_directions.dart';
-import 'package:latlong2/latlong.dart' as latlong2;
+import 'package:latlong2/latlong.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,13 +37,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final coordinates = [
-      LatLng(10.776983,106.690581),
-      LatLng(10.780691,106.658819)
+      DirectionCoordinate(10.776983,106.690581),
+      DirectionCoordinate(10.780691,106.658819)
     ];
 
     final bounds = LatLngBounds.fromPoints(
       coordinates.map((location) =>
-        latlong2.LatLng(location.latitude, location.longitude)
+        LatLng(location.latitude, location.longitude)
       ).toList()
     );
     const padding = 50.0;
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
               MarkerLayer(
                 markers: coordinates.map((location) {
                   return Marker(
-                    point: latlong2.LatLng(location.latitude, location.longitude),
+                    point: LatLng(location.latitude, location.longitude),
                     width: 35,
                     height: 35,
                     builder: (context) => const Icon(
