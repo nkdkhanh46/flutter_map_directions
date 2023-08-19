@@ -31,8 +31,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_map: ^4.0.0
-  latlong2: ^0.8.1
+  flutter_map: ^5.0.0
+  latlong2: ^0.9.0
   flutter_map_directions:
     path: ../
 
