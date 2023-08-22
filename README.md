@@ -15,9 +15,15 @@ Add the layer widget into FlutterMap:
 ```
 Widget build(BuildContext context) {
     return FlutterMap(
-        children: [
+        options: MapOptions(
+          ...
+        ),
+        nonRotatedChildren: [
             TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+            ),
+            MarkerLayer(
+              ...
             ),
             DirectionsLayer(
                 coordinates: []
