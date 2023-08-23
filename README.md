@@ -13,6 +13,8 @@ dependencies:
 Add the layer widget into FlutterMap:
 
 ```
+final DirectionController _directionController = DirectionController();
+
 Widget build(BuildContext context) {
     return FlutterMap(
         options: MapOptions(
@@ -26,9 +28,20 @@ Widget build(BuildContext context) {
               ...
             ),
             DirectionsLayer(
-                coordinates: []
+                coordinates: [],
+                controller: _directionController,
             ), // <-- add layer here
         ],
     );
 }
+```
+
+To update route:
+
+```
+void _loadRoute() async {
+    await ...;
+    _coordinates = [...]; // new coordinates after awaiting
+    _directionController.updateDirection(_coordinates);
+  }
 ```
