@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as latlong2;
 
+import 'direction_controller.dart';
 import 'direction_coordinate.dart';
 import 'osrm_route_response.dart';
 
@@ -14,6 +15,7 @@ class DirectionsLayer extends StatefulWidget {
   final Color? color;
   final double? strokeWidth;
   final Function(bool isRouteAvailable)? onCompleted;
+  final DirectionController? controller;
 
   const DirectionsLayer({
     super.key,
@@ -21,27 +23,40 @@ class DirectionsLayer extends StatefulWidget {
     this.color,
     this.strokeWidth,
     this.onCompleted,
+    this.controller,
   });
 
   @override
-  State<StatefulWidget> createState() => _DirectionsLayerState();
+  State<StatefulWidget> createState() => DirectionsLayerState();
+
+  void updateDirection(List<DirectionCoordinate> coordinates) {}
 }
 
-class _DirectionsLayerState extends State<DirectionsLayer> {
+class DirectionsLayerState extends State<DirectionsLayer> {
 
   final Color _defaultColor = Colors.blue;
   final double _defaultStrokeWidth = 3.0;
 
+  late List<DirectionCoordinate> _coordinates;
   final List<Polyline> _directions = [];
 
   @override
   void initState() {
+    if (widget.controller != null) {
+      widget.controller!.state = this;
+    }
+    _coordinates = widget.coordinates;
     _getDirections();
     super.initState();
   }
 
+  void updateCoordinates(List<DirectionCoordinate> coordinates) {
+    _coordinates = coordinates;
+    _getDirections();
+  }
+
   void _getDirections() async {
-    final destinations = widget.coordinates.map((location) => '${location.longitude},${location.latitude}').join(';');
+    final destinations = _coordinates.map((location) => '${location.longitude},${location.latitude}').join(';');
     final http.Response response;
     try {
       response = await http.get(

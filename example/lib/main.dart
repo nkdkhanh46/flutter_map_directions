@@ -33,42 +33,58 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   String _message = 'Finding route...';
+  double _topPadding = 0;
+
+  List<DirectionCoordinate> _coordinates = [];
+  final MapController _mapController = MapController();
+  final DirectionController _directionController = DirectionController();
 
   @override
-  Widget build(BuildContext context) {
-    final coordinates = [
-      DirectionCoordinate(10.776983,106.690581),
-      DirectionCoordinate(10.780691,106.658819)
-    ];
+  void initState() {
+    _loadNewRoute();
+    super.initState();
+  }
 
+  void _loadNewRoute() async {
+    await Future.delayed(const Duration(seconds: 5));
+    _coordinates = [
+      DirectionCoordinate(10.776983, 106.690581),
+      DirectionCoordinate(10.780691, 106.658819)
+    ];
     final bounds = LatLngBounds.fromPoints(
-      coordinates.map((location) =>
+      _coordinates.map((location) =>
         LatLng(location.latitude, location.longitude)
       ).toList()
     );
-    const padding = 50.0;
+    CenterZoom centerZoom = _mapController.centerZoomFitBounds(bounds);
+    _mapController.move(centerZoom.center, centerZoom.zoom);
+    _directionController.updateDirection(_coordinates);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _topPadding = MediaQuery.of(context).padding.top;
+    final bounds = LatLngBounds.fromPoints(
+      [DirectionCoordinate(10.776983, 106.690581)].map((location) =>
+        LatLng(location.latitude, location.longitude)
+      ).toList()
+    );
 
     return Scaffold(
       body: Stack(
         children: [
           FlutterMap(
+            mapController: _mapController,
             options: MapOptions(
               bounds: bounds,
-              boundsOptions: FitBoundsOptions(
-                padding: EdgeInsets.only(
-                  left: padding,
-                  top: padding + MediaQuery.of(context).padding.top,
-                  right: padding,
-                  bottom: padding,
-                ),
-              ),
+              boundsOptions: _buildMapFitBoundsOptions(),
             ),
             nonRotatedChildren: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               ),
               MarkerLayer(
-                markers: coordinates.map((location) {
+                markers: _coordinates.map((location) {
                   return Marker(
                     point: LatLng(location.latitude, location.longitude),
                     width: 35,
@@ -81,9 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 }).toList()
               ),
               DirectionsLayer(
-                coordinates: coordinates,
+                coordinates: _coordinates,
                 color: Colors.deepOrange,
                 onCompleted: (isRouteAvailable) => _updateMessage(isRouteAvailable),
+                controller: _directionController,
               ),
             ],
           ),
@@ -98,13 +115,27 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Text(_message),
             ),
-          )
+          ),
         ],
       )
     );
   }
 
+  FitBoundsOptions _buildMapFitBoundsOptions() {
+    const padding = 50.0;
+    return FitBoundsOptions(
+      padding: EdgeInsets.only(
+        left: padding,
+        top: padding + _topPadding,
+        right: padding,
+        bottom: padding,
+      ),
+    );
+  }
+
   void _updateMessage(bool isRouteAvailable) {
+    if (_coordinates.length < 2) return;
+
     setState(() {
       _message = isRouteAvailable ? 'Found route' : 'No route found';
     });

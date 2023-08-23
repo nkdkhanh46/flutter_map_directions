@@ -1,6 +1,6 @@
 name: flutter_map_directions
 description: A Flutter project package to show directions path on flutter_map
-version: 0.0.4
+version: 0.0.5
 homepage: https://github.com/nkdkhanh46/flutter_map_directions
 
 environment:
