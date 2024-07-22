@@ -20,7 +20,7 @@ Widget build(BuildContext context) {
         options: MapOptions(
           ...
         ),
-        nonRotatedChildren: [
+        children: [
             TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
             ),
@@ -40,7 +40,7 @@ To update route:
 
 ```
 void _loadRoute() async {
-    await ...;
+    await <load_route_async_action>;
     _coordinates = [...]; // new coordinates after awaiting
     _directionController.updateDirection(_coordinates);
   }

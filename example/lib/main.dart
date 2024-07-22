@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/plugin_api.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_directions/flutter_map_directions.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -33,7 +33,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   String _message = 'Finding route...';
-  double _topPadding = 0;
 
   List<DirectionCoordinate> _coordinates = [];
   final MapController _mapController = MapController();
@@ -56,30 +55,21 @@ class _MyHomePageState extends State<MyHomePage> {
         LatLng(location.latitude, location.longitude)
       ).toList()
     );
-    CenterZoom centerZoom = _mapController.centerZoomFitBounds(bounds);
-    _mapController.move(centerZoom.center, centerZoom.zoom);
+    _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(50)));
     _directionController.updateDirection(_coordinates);
   }
 
   @override
   Widget build(BuildContext context) {
-    _topPadding = MediaQuery.of(context).padding.top;
-    final bounds = LatLngBounds.fromPoints(
-      [DirectionCoordinate(10.776983, 106.690581)].map((location) =>
-        LatLng(location.latitude, location.longitude)
-      ).toList()
-    );
-
     return Scaffold(
       body: Stack(
         children: [
           FlutterMap(
             mapController: _mapController,
-            options: MapOptions(
-              bounds: bounds,
-              boundsOptions: _buildMapFitBoundsOptions(),
+            options: const MapOptions(
+              initialCenter: LatLng(10.776983, 106.690581),
             ),
-            nonRotatedChildren: [
+            children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               ),
@@ -89,10 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     point: LatLng(location.latitude, location.longitude),
                     width: 35,
                     height: 35,
-                    builder: (context) => const Icon(
+                    child: const Icon(
                       Icons.location_pin,
                     ),
-                    anchorPos: AnchorPos.align(AnchorAlign.top)
+                    alignment: Alignment.topCenter,
                   );
                 }).toList()
               ),
@@ -118,18 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       )
-    );
-  }
-
-  FitBoundsOptions _buildMapFitBoundsOptions() {
-    const padding = 50.0;
-    return FitBoundsOptions(
-      padding: EdgeInsets.only(
-        left: padding,
-        top: padding + _topPadding,
-        right: padding,
-        bottom: padding,
-      ),
     );
   }
 

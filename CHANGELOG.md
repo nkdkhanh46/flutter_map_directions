@@ -21,3 +21,13 @@
 * Update latlong2 to v0.9.0
 
 * Change class name: LatLng to DirectionsCoordinate
+
+## 0.0.5
+
+* Allow user to update route
+
+## 0.0.6
+
+* Update flutter_map to v7.0.2
+
+* Update latlong2 to v0.9.1
