@@ -31,3 +31,7 @@
 * Update flutter_map to v7.0.2
 
 * Update latlong2 to v0.9.1
+
+## 0.0.7
+
+* Add distance & duration to OsrmRoute response

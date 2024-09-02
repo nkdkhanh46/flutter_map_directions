@@ -10,12 +10,17 @@ class OsrmRouteResponse {
 }
 
 class OsrmRoute {
-  final OsrmGeometry geometry;
+  late OsrmGeometry geometry;
+  late double duration;
+  late double distance;
 
-  OsrmRoute(this.geometry);
+  OsrmRoute(this.geometry, this.duration, this.distance);
 
-  OsrmRoute.fromJson(Map<String, dynamic> data):
-      geometry = OsrmGeometry.fromJson(data['geometry']);
+  OsrmRoute.fromJson(Map<String, dynamic> data) {
+    geometry = OsrmGeometry.fromJson(data['geometry']);
+    duration = data['duration'];
+    distance = data['distance'];
+  }
 }
 
 class OsrmGeometry {
