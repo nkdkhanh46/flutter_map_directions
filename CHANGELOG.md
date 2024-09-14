@@ -35,3 +35,7 @@
 ## 0.0.7
 
 * Add distance & duration to OsrmRoute response
+
+## 0.0.8
+
+* Public distance & duration of OsrmRoute response

@@ -14,7 +14,7 @@ class DirectionsLayer extends StatefulWidget {
   final List<DirectionCoordinate> coordinates;
   final Color? color;
   final double? strokeWidth;
-  final Function(bool isRouteAvailable)? onCompleted;
+  final Function(List<OsrmRoute> routes)? onCompleted;
   final DirectionController? controller;
 
   const DirectionsLayer({
@@ -63,25 +63,25 @@ class DirectionsLayerState extends State<DirectionsLayer> {
           Uri.parse('https://router.project-osrm.org/route/v1/driving/$destinations?overview=full&geometries=geojson')
       );
       if (response.statusCode != 200) {
-        _onCompleted(false);
+        _onCompleted([]);
       } else {
         _onRetrieveRouteSuccess(response);
       }
     } catch (_) {
-      _onCompleted(false);
+      _onCompleted([]);
     }
   }
 
-  void _onCompleted(bool isRouteAvailable) {
+  void _onCompleted(List<OsrmRoute> routes) {
     if (widget.onCompleted != null) {
-      widget.onCompleted!(isRouteAvailable);
+      widget.onCompleted!(routes);
     }
   }
 
   void _onRetrieveRouteSuccess(http.Response response) {
-    final routes = OsrmRouteResponse.fromJson(jsonDecode(response.body));
+    final routeResponse = OsrmRouteResponse.fromJson(jsonDecode(response.body));
     _directions.clear();
-    for (var route in routes.routes) {
+    for (var route in routeResponse.routes) {
       _directions.add(
         Polyline(
           points: route.geometry.coordinates.map((e) => latlong2.LatLng(e.points.last, e.points.first)).toList(),
@@ -92,7 +92,7 @@ class DirectionsLayerState extends State<DirectionsLayer> {
         )
       );
     }
-    _onCompleted(_directions.isNotEmpty);
+    _onCompleted(routeResponse.routes);
     setState(() {});
   }
 

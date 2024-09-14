@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
               DirectionsLayer(
                 coordinates: _coordinates,
                 color: Colors.deepOrange,
-                onCompleted: (isRouteAvailable) => _updateMessage(isRouteAvailable),
+                onCompleted: (routes) => _updateMessage(routes),
                 controller: _directionController,
               ),
             ],
@@ -111,11 +111,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _updateMessage(bool isRouteAvailable) {
+  void _updateMessage(List<OsrmRoute> routes) {
     if (_coordinates.length < 2) return;
 
     setState(() {
-      _message = isRouteAvailable ? 'Found route' : 'No route found';
+      _message = routes.isNotEmpty ? 'Found route' : 'No route found';
     });
   }
 }
